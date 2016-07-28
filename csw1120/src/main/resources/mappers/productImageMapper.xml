@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+ 
+ <mapper namespace ="net.nigne.kkt.mappers.productImageMapper">     
+ 	
+ 	<insert id="insert" >
+ 		insert into product_image (image)
+ 		values(#{image})
+ 	</insert>
+ 	<insert id="inserttrade_no" >
+ 		insert into product_image (trade_no)
+ 		values(#{trade_no})
+ 	</insert>
+ 	<insert id="uploadFile" parameterType="HashMap">
+		<!-- <selectKey keyProperty="IDX" resultType="string" order="BEFORE">
+			SELECT TRADE_NO_SEQ.NEXTVAL FROM DUAL
+		</selectKey> -->
+		INSERT INTO
+		PRODUCT_IMAGE (trade_no, image)
+		VALUES (trade_no_seq.currval, #{saveFileName})
+	</insert>
+ 	
+ 	<select id="get" resultType="net.nigne.kkt.domain.ProductImageVO">
+ 		select * from proudct_image where image_no= #{no}
+ 	</select>
+ 	
+ 	<select id="getList" parameterType="HashMap" resultType="net.nigne.kkt.domain.ProductImageVO">
+ 		select *
+		from product_image 
+ 	</select>
+ 	
+ 	<update id="update">
+ 		update proudct_image
+ 		<!-- trim prefix="SET" suffixOverrides=",">
+ 		</trim -->
+ 		<set>
+ 			<if test="content != null">
+ 				trade_no= #{trade_no},
+ 			</if>
+ 			<if test="content != null">
+ 				image= #{image},
+ 			</if>
+ 		</set>
+ 		where image_no=#{no}
+ 	</update>
+ 	
+ 	
+ 	<delete id="delete">
+ 		delete from PRODUCT_IMAGE where TRADE_NO = #{trade_no}
+ 	</delete>
+ 	
+ 	
+ </mapper>

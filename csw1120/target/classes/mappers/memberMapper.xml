@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="net.nigne.kkt.mappers.memberMapper">
+	
+	<select id="memberList" resultType="net.nigne.kkt.domain.MemberVO">
+		select * 
+		from member
+	</select>
+	
+	<select id="memberInfo" resultType="net.nigne.kkt.domain.MemberVO">
+		select * from member where email = #{email}
+	</select>
+	
+	<insert id="memberInsert">
+		insert into member (email, pw, phone_num, name, thumbnail)
+		values (#{email}, CryptIT.encrypt(#{pw}, #{email}), #{phone_num}, #{name}, #{thumbnail})
+	</insert>
+	
+	<select id="memberLogin" resultType="net.nigne.kkt.domain.MemberVO">
+		<!-- select * from member where email = #{email} and pw = #{pw} -->
+		select CryptIT.decrypt(pw,#{email}) pw from member where email=#{email}
+	</select>
+	
+	<select id="friendList" resultType="net.nigne.kkt.domain.MemberVO">
+		select * from member m inner join friends f on m.email = f.friend_email where f.member_email = #{email}
+	</select>
+	
+	<select id="friendListSearch" resultType="net.nigne.kkt.domain.MemberVO">
+		select * from member m inner join friends f on m.email = f.friend_email where f.member_email = #{email} and m.name LIKE '%'||#{search}||'%'
+	</select>
+	
+	<select id="friendSearch" resultType="net.nigne.kkt.domain.MemberVO">
+		select * 
+		from MEMBER m inner join FRIENDS f 
+		on m.EMAIL = f.MEMBER_EMAIL 
+		where f.FRIEND_EMAIL = #{email} 
+		and email NOT IN (
+		select a.FRIEND_EMAIL from FRIENDS a inner join FRIENDS b on a.FRIEND_EMAIL = b.MEMBER_EMAIL 
+		where a.MEMBER_EMAIL = b.FRIEND_EMAIL and a.MEMBER_EMAIL = #{email})
+	</select>
+	
+	<insert id="friendAdd">	
+		insert into friends (friend_email, member_email)
+		values (#{friend_email}, #{member_email})
+	</insert>
+	
+	<select id="alreadyFriend" resultType="net.nigne.kkt.domain.FriendsVO">
+		select * from FRIENDS where member_email = #{member_email} and FRIEND_EMAIL = #{friend_email}
+	</select>
+	
+	<update id="memberUpdate">
+		update MEMBER set PW=CryptIT.encrypt(#{pw}, #{email}), phone_num=#{phone_num}, name=#{name}, thumbnail=#{thumbnail} where email=#{email}
+	</update>
+	
+
+</mapper>
